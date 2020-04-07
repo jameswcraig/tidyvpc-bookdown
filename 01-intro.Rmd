@@ -1,0 +1,79 @@
+# Introduction {#intro}
+
+**When deriving a Visual Predictive check (VPC) you must:**
+
+* Have both observed and simulated datasets that include x & y variables, typically TIME & DV.
+
+* Compute Prediction Intervals on Simulated versus Observed Data
+
+**When deriving a VPC you may want to:**
+
+* Stratify over variables in your model.
+
+* Censor data below LLOQ.
+
+* Perform prediction correction (pcVPC).
+
+**The tidyvpc package makes these steps fast and easy:**
+
+* By providing readable syntax using the `%>%` operator from magrittr.
+
+* It uses efficient backend computation, taking advantage of `data.table` parallelization.
+
+* By providing traditional binning methods and new binless methods using additive quantile regression and loess for pcVPC.
+
+* By using ggplot2 graphics engine to visualize the results of the VPC.
+
+
+This document introduces you to tidyvpc's set of tools, and shows you how to apply them to tidyvpcobj to derive VPC.
+
+All of the tidyvpc functions take a tidyvpcobj as the first argument, with the exception of the first function `observed()` in the piping chain, which takes a `data.frame` or `data.table` of the observed dataset.  Rather than forcing the user to either save intermediate objects or nest functions, tidyvpc provides the `%>%` operator from magrittr. The result from one step is then "piped" into the next step, with the final function in the piping chain always `vpcstats()`.  You can use the pipe to rewrite multiple operations that you can read left-to-right, top-to-bottom (reading the pipe operator as "then").
+
+## Data
+
+To explore the functionality of tidyvpc, we'll use an altered version of obs_data(`vpc::simple_data$obs`) & sim_data(`vpc::simple_data$sim`) from the vpc package. These datasets contains all necessary variables to explore the functionality of tidyvpc including:
+
+* DV (y variable)
+
+* TIME (x variable)
+
+* NTIME (nominal time for binning on x-variable)
+
+* GENDER (gender variable for stratification, "M", "F")
+
+* STUDY (study for stratification, "Study A", "Study B")
+
+* PRED (prediction variable for pcVPC)
+
+* MDV (Missing DV)
+
+```{r include=FALSE}
+library(data.table)
+```
+
+```{r message=FALSE, warning=FALSE}
+library(tidyvpc)
+obs_data <- tidyvpc::obs_data
+sim_data <- tidyvpc::sim_data
+head(obs_data)
+
+```
+
+### Preprocessing data
+
+First we'll need to subset our data by filtering `MDV == 0` which removes rows where both `DV == 0` & `TIME == 0`. 
+
+```{r}
+obs_data <- as.data.table(obs_data)
+sim_data <- as.data.table(sim_data)
+obs_data <- obs_data[obs_data$MDV == 0,]
+sim_data <- sim_data[sim_data$MDV == 0,]
+```
+
+Next we'll add the prediction variable from the first replicate of simulated data into our observed data.
+
+```{r}
+obs_data$PRED <- sim_data$PRED[sim_data$REP == 1]
+```
+
+Now that we have our data ready to derive VPC, proceed to the next chapter to learn about using the various functions in the `tidyvpc` package. 

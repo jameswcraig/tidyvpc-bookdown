@@ -1,0 +1,31 @@
+--- 
+title: "Introduction to tidyvpc"
+author: "James Craig"
+date: "`r Sys.Date()`"
+documentclass: book
+site: bookdown::bookdown_site
+description: VPC Percentiles and Prediction Intervals
+---
+
+# Installation
+
+## CRAN
+
+```{r cran-install, eval=FALSE}
+install.packages("tidyvpc")
+```
+
+## Development version from GitHub
+
+Install devtools if not previously installed.
+```{r dev-install, eval=FALSE}
+install.packages("devtools")
+```
+
+If there are errors (converted from warning) during installation related to packages built under different version of R,
+they can be ignored by setting the environment variable `R_REMOTES_NO_ERRORS_FROM_WARNINGS="true"` before calling `install_github()`
+
+```{r install-github, eval = FALSE}
+Sys.setenv(R_REMOTES_NO_ERRORS_FROM_WARNINGS="true")
+devtools::install_github("jameswcraig/tidyvpc")
+```
